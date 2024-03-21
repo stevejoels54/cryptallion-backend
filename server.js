@@ -1,5 +1,7 @@
 import express from "express";
 import router from "./routes";
+import dbClient from "./utils/db";
+import redisClient from "./utils/redis";
 
 require("dotenv").config();
 
@@ -12,5 +14,12 @@ app.use("/", router);
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+(async () => {
+  const dbStatus = await dbClient.isAlive();
+  const redisStatus = await redisClient.isAlive();
+  if (dbStatus) console.log("DB connection established");
+  if (redisStatus) console.log("Redis connection established");
+})();
 
 export default app;

@@ -30,8 +30,6 @@ class DbClient {
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
       return false;
-    } finally {
-      await this.client.close(); // Close connection even on error
     }
   }
 }
