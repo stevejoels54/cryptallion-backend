@@ -12,7 +12,8 @@ class UsersController {
     if (!password) return res.status(400).send({ error: "Missing password" });
 
     const userExists = await dbClient.users.findOne({ email });
-    if (userExists) return res.status(400).send({ error: "Already exist" });
+    if (userExists)
+      return res.status(400).send({ error: "User already exist" });
 
     // encrypt the password
     const hashedPassword = await bcrpt.hash(password, 10);
@@ -24,6 +25,7 @@ class UsersController {
         password: hashedPassword,
       });
       return res.status(201).send({
+        message: "User created successfully",
         id: result.insertedId,
         email,
       });
@@ -48,7 +50,6 @@ class UsersController {
 
     const token = userUtils.generateAuthToken(user);
     const key = `auth_${token}`;
-    // await redisClient.set(key, user._id.toString(), 86400);
     // use a try catch block to catch errors that can be thrown by set method
     try {
       await redisClient.set(key, user._id.toString(), 86400);
@@ -57,6 +58,7 @@ class UsersController {
     }
 
     return res.status(200).send({
+      message: "Login successful",
       authToken: token,
       user: {
         id: user._id,
@@ -86,7 +88,13 @@ class UsersController {
     const user = await dbClient.users.findOne({ _id: new ObjectId(userId) });
     if (!user) return res.status(401).send({ error: "Unauthorized" });
 
-    return res.status(200).send({ id: user._id, email: user.email });
+    return res.status(200).send({
+      message: "User found",
+      user: {
+        ...user,
+        id: user._id,
+      },
+    });
   }
 }
 
