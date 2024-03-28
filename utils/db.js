@@ -27,6 +27,8 @@ class DbClient {
     this.client.connect(); // Connect to the database
     this.db = this.client.db(database); // Select the database
     this.users = this.db.collection("users"); // Select the collection
+    this.transactions = this.db.collection("transactions"); // Select the collection
+    this.portfolios = this.db.collection("portfolios"); // Select the collection
   }
 
   async isAlive() {

@@ -57,8 +57,11 @@ class UsersController {
     }
 
     return res.status(200).send({
-      message: "Authentication successful",
       authToken: token,
+      user: {
+        id: user._id,
+        email: user.email,
+      },
     });
   }
 
