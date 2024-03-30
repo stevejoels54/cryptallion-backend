@@ -18,10 +18,19 @@ app.listen(port, () => {
 });
 
 (async () => {
-  const dbStatus = await dbClient.isAlive();
-  const redisStatus = await redisClient.isAlive();
-  if (dbStatus) console.log("DB connection established");
-  if (redisStatus) console.log("Redis connection established");
+  try {
+    await dbClient.isAlive();
+    console.log("MongoDB is connected");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+
+  try {
+    await redisClient.isAlive();
+    console.log("Redis is connected");
+  } catch (error) {
+    console.error("Error connecting to Redis:", error);
+  }
 })();
 
 export default app;
