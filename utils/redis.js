@@ -22,6 +22,8 @@ class RedisClient {
       });
     }
 
+    this.client.connect(); // Connect to the Redis server
+
     this.client.on("error", (err) => {
       console.log(`Redis client not connected to the server: ${err}`);
     });
@@ -29,50 +31,38 @@ class RedisClient {
 
   async isAlive() {
     try {
-      await this.client.connect();
-      return true;
+      return this.client.status === "ready";
     } catch (error) {
       console.error("Error connecting to Redis:", error);
       return false;
-    } finally {
-      await this.client.quit();
     }
   }
 
   async get(key) {
     try {
-      await this.client.connect();
       const value = await this.client.get(key);
       return value;
     } catch (error) {
       console.error("Error getting value from Redis:", error);
       throw error; // Re-throw for handling in the main application
-    } finally {
-      await this.client.quit();
     }
   }
 
   async set(key, value, duration) {
     try {
-      await this.client.connect();
       await this.client.set(key, value, "EX", duration); // Set expiration
     } catch (error) {
       console.error("Error setting value in Redis:", error);
       throw error; // Re-throw for handling in the main application
-    } finally {
-      await this.client.quit();
     }
   }
 
   async del(key) {
     try {
-      await this.client.connect();
       await this.client.del(key);
     } catch (error) {
       console.error("Error deleting key from Redis:", error);
       throw error; // Re-throw for handling in the main application
-    } finally {
-      await this.client.quit();
     }
   }
 }
