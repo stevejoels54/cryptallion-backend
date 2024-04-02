@@ -27,7 +27,7 @@ class TransactionsController {
       return res.status(400).send({ error: "Invalid user ID" });
     }
 
-    const { type, symbol, amount, price, fee, notes, tags } = req.body;
+    const { type, symbol, amount, price, fee, notes, tags, date } = req.body;
 
     if (!type || !symbol || !amount || !price) {
       return res.status(400).send({ error: "Missing fields" });
@@ -43,7 +43,9 @@ class TransactionsController {
       tags,
       status: "pending",
       userId: new ObjectId(userId),
+      date: date || new Date(),
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     try {
@@ -81,7 +83,14 @@ class TransactionsController {
 
       return res.status(200).send({
         message: "Transactions found",
-        transactions: transactions,
+        // return array of transactions
+        transactions: transactions.map((transaction) => {
+          return {
+            ...transaction,
+            id: transaction._id,
+            tags: transaction.tags || [],
+          };
+        }),
       });
     } catch (error) {
       console.log(error);
@@ -123,7 +132,11 @@ class TransactionsController {
 
       return res.status(200).send({
         message: "Transaction found",
-        transaction: transaction,
+        // return transaction object
+        transaction: {
+          ...transaction,
+          id: transaction._id,
+        },
       });
     } catch (error) {
       console.log(error);
@@ -136,7 +149,8 @@ class TransactionsController {
     const userId = await userUtils.getUserIdAndKey(token);
 
     const { id } = req.params;
-    const { type, symbol, amount, price, fee, notes, tags, status } = req.body;
+    const { type, symbol, amount, price, fee, notes, tags, status, date } =
+      req.body;
 
     if (!userId) {
       return res.status(400).send({ error: "Missing user ID" });
@@ -172,6 +186,8 @@ class TransactionsController {
         notes: notes || transaction.notes,
         tags: tags || transaction.tags,
         status: status || transaction.status,
+        updatedAt: new Date(),
+        date: date || transaction.date,
       };
 
       await dbClient.transactions.updateOne(
@@ -181,7 +197,10 @@ class TransactionsController {
 
       return res.status(200).send({
         message: "Transaction updated successfully",
-        transaction: updatedTransaction,
+        transaction: {
+          ...updatedTransaction,
+          id: transaction._id,
+        },
       });
     } catch (error) {
       console.log(error);
