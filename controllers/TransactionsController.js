@@ -27,21 +27,33 @@ class TransactionsController {
       return res.status(400).send({ error: "Invalid user ID" });
     }
 
-    const { type, symbol, amount, price, fee, notes, tags, date } = req.body;
+    const {
+      type,
+      symbol,
+      symbol_id,
+      amount,
+      price,
+      fee,
+      notes,
+      tags,
+      date,
+      status,
+    } = req.body;
 
-    if (!type || !symbol || !amount || !price) {
+    if (!type || !symbol || !amount || !price || !symbol_id) {
       return res.status(400).send({ error: "Missing fields" });
     }
 
     const transaction = {
       type,
       symbol,
+      symbol_id,
       amount,
       price,
       fee,
       notes,
       tags,
-      status: "pending",
+      status: status || "pending",
       userId: new ObjectId(userId),
       date: date || new Date(),
       createdAt: new Date(),
@@ -149,8 +161,18 @@ class TransactionsController {
     const userId = await userUtils.getUserIdAndKey(token);
 
     const { id } = req.params;
-    const { type, symbol, amount, price, fee, notes, tags, status, date } =
-      req.body;
+    const {
+      type,
+      symbol,
+      symbol_id,
+      amount,
+      price,
+      fee,
+      notes,
+      tags,
+      status,
+      date,
+    } = req.body;
 
     if (!userId) {
       return res.status(400).send({ error: "Missing user ID" });
@@ -180,6 +202,7 @@ class TransactionsController {
       const updatedTransaction = {
         type: type || transaction.type,
         symbol: symbol || transaction.symbol,
+        symbol_id: symbol_id || transaction.symbol_id,
         amount: amount || transaction.amount,
         price: price || transaction.price,
         fee: fee || transaction.fee,
