@@ -1,6 +1,7 @@
 import express from "express";
 import UsersController from "../controllers/UsersController";
 import TransactionsController from "../controllers/TransactionsController";
+import DashboardController from "../controllers/DashBoardController";
 import OtpController from "../controllers/OtpController";
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
@@ -45,6 +46,13 @@ router.delete(
   `${prefix}/transactions/:id`,
   AuthMiddleware.authenticate,
   TransactionsController.deleteTransaction
+);
+
+// dashboard routes
+router.get(
+  `${prefix}/dashboard`,
+  AuthMiddleware.authenticate,
+  DashboardController.getChartData
 );
 
 export default router;
