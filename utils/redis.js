@@ -11,13 +11,26 @@ class RedisClient {
   constructor() {
     // check if the server is in production mode or not and set the client accordingly
     if (serverMode === "development") {
-      this.client = createClient({}); // default configuration
+      this.client = createClient({
+        socket: {
+          connectTimeout: 5000, // 5 seconds connection timeout
+          reconnectStrategy: (times) => {
+            const delay = Math.min(times * 50, 2000); // 50 milliseconds, 2 seconds
+            return delay;
+          },
+        },
+      }); // default configuration
     } else {
       this.client = createClient({
         password: redisPassword,
         socket: {
           host: redisUrl,
           port: redisPort,
+          connectTimeout: 5000, // 5 seconds connection timeout
+          reconnectStrategy: (times) => {
+            const delay = Math.min(times * 50, 2000); // 50 milliseconds, 2 seconds
+            return delay;
+          },
         },
       });
     }
