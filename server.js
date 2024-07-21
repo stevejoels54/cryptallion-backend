@@ -13,6 +13,14 @@ app.use(express.json());
 app.use(cors());
 app.use("/", router);
 
+// home route welcome message
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Welcome to the Cryptallion API",
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
